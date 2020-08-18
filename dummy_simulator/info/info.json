@@ -1,0 +1,6 @@
+{
+    "name": "dummy_simulator",
+    "version": "0.1.0-BUILD_NUMBER",
+    "revision": "REVISION",
+    "description": "A toolkit application testing and learnning FPGA Verilog programming for RedPitaya. Includes several already-made modules."
+}

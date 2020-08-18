@@ -1,0 +1,57 @@
+# Auxiliar folders #
+####################
+_save/
+assets
+dummy_simulator/fpga/project/
+dummy_simulator/src/old/
+_settings.env
+_build_number
+dummy_simulator/target/
+dummy_simulator/target_dbg/
+dummy_simulator/target_rld/
+dummy_simulator/fpga/out/
+dummy_simulator/fpga/.srcs/
+archive/
+dummy_simulator/fpga/.Xil
+dummy_simulator/fpga/sdk
+
+# Compiled source #
+###################
+*.o
+*.so
+!dummy_simulator/controllerhf.so
+
+# Packages #
+############
+# it's better to unpack these files and commit the raw source
+# git has its own built in compression methods
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Logs and databases #
+######################
+*.log
+*.sql
+*.sqlite
+*.jou
+vivado*.str
+usage_statistics_webtalk.*
+fsm_encoding.os
+
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+__pycache__/
