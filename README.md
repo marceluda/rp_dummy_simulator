@@ -8,37 +8,40 @@ The simulated signal is a [lorentizian Peak](https://en.wikipedia.org/wiki/Spect
 
 ## The features of the App
 
-  * Implementation of Low Pass Filter and High Pass Filter for the input control signal
-  * The shape of the peak can be controlled with several parameters
-    * *Position*: Value of the control signal where the peak is centered at.
-    * *Height* of peak . Negative value is a negative peak.
-    * *Width / Finesse of the Peak*
-    * *Baseline* slope: a linear base line where the peak is mounted on.
-  * You can add white gaussian noise to the response signal, with variable amplitude
-  * You can simulate a slow drift of the peak position
+- Implementation of Low Pass Filter and High Pass Filter for the input control signal
+- The shape of the peak can be controlled with several parameters
+  - *Position*: Value of the control signal where the peak is centered at.
+  - *Height* of peak . Negative value is a negative peak.
+  - *Width / Finesse of the Peak*
+  - *Baseline* slope: a linear base line where the peak is mounted on.
+- You can add white gaussian noise to the response signal, with variable amplitude
+- You can simulate a slow drift of the peak position
 
 ## Operation
 
 There are two ways of operation:
 
 ### Internal visualization
+
 Any time, in any moment, you can watch the configured peak signal by choosing the chanels on the Scope:
-  * `OscA`: Simulated Ramp
-  * `OscB`: Simulated Output
+
+- `OscA`: Simulated Ramp
+- `OscB`: Simulated Output
 
 Then you can choose the best parameters for your model without external scanning.
 
 ### External scanning
+
 Connect the other device you want to test for acquisition and control.
 
-  * `Control Input`: Choose the input signal for the control voltage. ex.: `in1`.
-     Probably you would want to configure a Ramp-scan on this port.
-  * Assign `Output` wire to one of the `Out1`/`Out2` ports.
-  * `OscA`: Choose `Input Signal`
-  * `OscB`: Choose `Output`
+- `Control Input`: Choose the input signal for the control voltage. ex.: `in1`.
+   Probably you would want to configure a Ramp-scan on this port.
+- Assign `Output` wire to one of the `Out1`/`Out2` ports.
+- `OscA`: Choose `Input Signal`
+- `OscB`: Choose `Output`
 
-  Now, operate the device you want to test. You can see on the Oscilloscope all the time the voltage
-  signal the device is sending to the simulator and the response of the system.
+Now, operate the device you want to test. You can see on the Oscilloscope all the time the voltage
+signal the device is sending to the simulator and the response of the system.
 
 # Download and install
 
