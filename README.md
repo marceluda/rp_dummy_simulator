@@ -10,10 +10,10 @@ The simulated signal is a [lorentizian Peak](https://en.wikipedia.org/wiki/Spect
 
 - Implementation of Low Pass Filter and High Pass Filter for the input control signal
 - The shape of the peak can be controlled with several parameters
-  - *Position*: Value of the control signal where the peak is centered at.
-  - *Height* of peak . Negative value is a negative peak.
-  - *Width / Finesse of the Peak*
-  - *Baseline* slope: a linear base line where the peak is mounted on.
+ - *Position*: Value of the control signal where the peak is centered at.
+ - *Height* of peak . Negative value is a negative peak.
+ - *Width / Finesse of the Peak*
+ - *Baseline* slope: a linear base line where the peak is mounted on.
 - You can add white gaussian noise to the response signal, with variable amplitude
 - You can simulate a slow drift of the peak position
 
