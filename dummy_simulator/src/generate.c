@@ -471,7 +471,7 @@ int generate_init(rp_calib_params_t *calib_params)
 {
     gen_calib_params = calib_params;
 
-    if(fpga_awg_init() < 0) {
+    if(GEN_FPGA_HAS_ASG && fpga_awg_init() < 0) {
         return -1;
     }
 
@@ -491,7 +491,8 @@ int generate_init(rp_calib_params_t *calib_params)
  */
 int generate_exit(void)
 {
-    fpga_awg_exit();
+    if(GEN_FPGA_HAS_ASG)
+        fpga_awg_exit();
 
     return 0;
 }
@@ -558,6 +559,10 @@ int generate_update(rp_app_params_t *params)
         }
     }
     params[GEN_AWG_REFRESH].value = 0;
+
+    /* No ASG in this FPGA: g_awg_reg is not mapped, so do not write the generator */
+    if(!GEN_FPGA_HAS_ASG)
+        return 0;
 
     /* Waveform from signal gets treated differently then others */
     if(ch1_enable > 0) {

@@ -10,13 +10,19 @@ OPTIND=1         # Reset in case getopts has been used previously in the shell.
 # Initialize our own variables:
 port_number=22
 
-while getopts "p:h?" opt; do
+webonly=false
+
+while getopts "wp:h?" opt; do
     case "$opt" in
     p)  port_number=$OPTARG
         echo "port_number: $port_number"
         ;;
+    w)  webonly=true
+        echo "webonly: $webonly"
+        ;;
     h|\?)
-        echo "${0} [-p port_number] rp-XXXXXX.local "
+        echo "${0} [-w] [-p port_number] rp-XXXXXX.local "
+        echo "   -w : upload only the web interface (index.html, css, js)"
         exit 0
         ;;
 
@@ -110,11 +116,24 @@ txt=( "\nIn the future, you will not need to type the root password again for re
       "\nEn el futuro no necesitarás tipear nuevamente la clave SSH para root. \n")
 echo -e ${txt[$L]}
 
-ssh $RPIP $RPOPTS "PATH_REDPITAYA=/opt/redpitaya /boot/sbin/rw ; rm -rf /opt/redpitaya/www/apps/${APP} ; mkdir -p /opt/redpitaya/www/apps/${APP} "
+if $webonly ; then
 
-echo -e "\n\n---------------------\n\n"
+    ssh $RPIP $RPOPTS "PATH_REDPITAYA=/opt/redpitaya /boot/sbin/rw ; rm -rf /opt/redpitaya/www/apps/${APP}/{index.html,js,css} "
+    echo -e "\n\n---------------------\n\n"
+    scp  ${RPSCP} -r index.html css js root@${RPIP}:/opt/redpitaya/www/apps/${APP}/
 
-scp  ${RPSCP} -r controllerhf.so css js fpga.conf index.html info py red_pitaya.bit  root@${RPIP}:/opt/redpitaya/www/apps/${APP}/
+else
+
+    ssh $RPIP $RPOPTS "PATH_REDPITAYA=/opt/redpitaya /boot/sbin/rw ; rm -rf /opt/redpitaya/www/apps/${APP} ; mkdir -p /opt/redpitaya/www/apps/${APP} "
+    echo -e "\n\n---------------------\n\n"
+    # fpga.sh + fpga.bit.bin: Ecosystem 2.0 (fpga.sh needs the exec bit: scp keeps the mode of the local file)
+    # nginx.conf: no cache for index.html. c/ only if the App has it
+    EXTRA=""
+    if [ -d c ]; then EXTRA="c"; fi
+    chmod 755 fpga.sh
+    scp  ${RPSCP} -r controllerhf.so css js ${EXTRA} nginx.conf fpga.conf fpga.sh fpga.bit.bin index.html info py red_pitaya.bit  root@${RPIP}:/opt/redpitaya/www/apps/${APP}/
+
+fi
 
 
 

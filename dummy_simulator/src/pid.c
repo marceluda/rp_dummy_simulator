@@ -63,7 +63,7 @@
 
 int pid_init(void)
 {
-    if(fpga_pid_init() < 0) {
+    if(PID_FPGA_HAS_PID && fpga_pid_init() < 0) {
         return -1;
     }
 
@@ -81,7 +81,8 @@ int pid_init(void)
  */
 int pid_exit(void)
 {
-    fpga_pid_exit();
+    if(PID_FPGA_HAS_PID)
+        fpga_pid_exit();
 
     return 0;
 }
@@ -110,6 +111,10 @@ int pid_update(rp_app_params_t *params)
 
     pid_param_t pid[NUM_OF_PIDS] = {{ 0 }};
     uint32_t ireset = 0;
+
+    /* No PID block in this FPGA: g_pid_reg is not mapped, so do not write it */
+    if(!PID_FPGA_HAS_PID)
+        return 0;
 
     for (i = 0; i < NUM_OF_PIDS; i++) {
         /* PID enabled? */

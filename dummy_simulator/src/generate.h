@@ -40,6 +40,11 @@ typedef struct awg_param_s {
 
 /** @} */
 
+/* The dummy_simulator FPGA has no ASG: in fpga/rtl/red_pitaya_top.v i_asg is commented out and
+ * sys_bus slot 2 (0x402xxxxx) is a stub (ack=1, rdata=0). With 0, generate_* never touch that
+ * address range (no mmap, no writes). Set to 1 only if i_asg is re-enabled in the RTL. */
+#define GEN_FPGA_HAS_ASG 0
+
 int generate_init(rp_calib_params_t *calib_params);
 int generate_exit(void);
 

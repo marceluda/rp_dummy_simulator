@@ -503,7 +503,9 @@ red_pitaya_asg i_asg (
 );
 /* */
 
-/* include_genfun enable
+/* include_genfun enable */
+// ASG stub: sys_bus slot 2 (0x402xxxxx) must always ack, otherwise axi_slave times out
+// (SLVERR) and the CPU access ends in SIGBUS (e.g. fpga_awg_exit() when nginx unloads the App).
 assign sys_rdata[2*32+:32] = 32'h0;
 assign sys_err  [2       ] =  1'b0;
 assign sys_ack  [2       ] =  1'b1;
