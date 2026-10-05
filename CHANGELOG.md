@@ -22,3 +22,12 @@
   - FIXED SIGBUS when unloading the App: the ASG slot stub in the RTL was commented out (no ack on the bus)
   - The controller no longer touches the ASG and PID blocks, which do not exist in this FPGA
   - FIXED unloading message ("Unloading scope (with dummy extensions)")
+
+## v0.1.2
+  - FIXED endless loop of POSTs (~15/s, it exhausted the nginx file descriptors) when a NaN reached the parameters
+    (e.g. a selector left without selection by an incomplete config): it counted as a change that was never sent
+    - Values that are not finite numbers (NaN, undefined, null, Infinity) are never a pending change
+    - Config -> load keeps the current value of the keys missing in the config (no empty selectors)
+    - The selectors never copy NaN to the parameters
+    - Guard in sendParams(): no POST without a real change less than 200 ms after the previous one, and at most
+      10 POST/s (a warning is logged in the console)
