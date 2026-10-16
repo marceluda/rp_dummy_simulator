@@ -80,6 +80,26 @@ int dummy_exit(void)
 
 /*----------------------------------------------------------------------------------*/
 /**
+ * @brief Write only the Ext Trig selector (trig_sw) to the FPGA.
+ *
+ * v0.1.3: called from rp_app_init() so that the default of dummy_trig_sw (64, Scan floor) reaches the
+ * FPGA without touching the other dummy registers (the FPGA reset value was 0 up to v0.1.3, 64 since v0.1.4).
+ *
+ * @param[in] params  Pointer to overall configuration parameters
+ * @retval -1 module not initialized
+ * @retval  0 succesful update
+ */
+int dummy_set_trig_sw(rp_app_params_t *params)
+{
+    if(g_dummy_reg == NULL)
+        return -1;
+    g_dummy_reg->trig_sw = (int)params[DUMMY_TRIG_SW].value;
+    return 0;
+}
+
+
+/*----------------------------------------------------------------------------------*/
+/**
  * @brief Update LOCK Controller module towards actual settings.
  *
  * A function is intended to be called whenever one of the settings is modified

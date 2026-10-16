@@ -30,6 +30,13 @@ Any time, in any moment, you can watch the configured peak signal by choosing th
 
 Then you can choose the best parameters for your model without external scanning.
 
+By default (since v0.1.3) the Scope triggers on the Simulated Ramp: Trigger `Source` = External, `Mode` = Normal
+and `Ext Trig` = **Scan floor** (rising edge when the Simulated Ramp jumps from its maximum to its minimum, once
+every 131 us). `Ext Trig` can also be `Pin` (external trigger pin, DIO0_P) or `None`. Since v0.1.4 the FPGA
+starts with these values too, and the debounce of the Scope external trigger is 100 us (it was 0.5 ms), so every
+floor of the Simulated Ramp is a valid trigger for the Scope (the register 0x40100090 sets the debounce, in
+8 ns clock cycles).
+
 ### External scanning
 
 Connect the other device you want to test for acquisition and control.

@@ -31,3 +31,26 @@
     - The selectors never copy NaN to the parameters
     - Guard in sendParams(): no POST without a real change less than 200 ms after the previous one, and at most
       10 POST/s (a warning is logged in the console)
+
+## v0.1.3
+  - ADDED "Scan floor" option of Ext Trig (value 64 of dummy_trig_sw): the Scope External trigger fires at the floor
+    of the Simulated Ramp (when it jumps from its maximum to its minimum, period 131 us). No FPGA rebuild in this
+    version: it did not work yet, because trigger_signals was an implicit 1-bit net in the RTL (fixed in v0.1.4)
+  - Ext Trig only offers None (0), Pin (1) and Scan floor (64); the unused inputs (2, 4, 8, 16, 32, 128) are gone
+  - Defaults when the App starts without a saved state: Trigger Source = External, Mode = Normal, Ext Trig = Scan floor.
+    The controller writes trig_sw at start (the FPGA resets it to 0); the RELOAD controller keeps the FPGA value
+
+## v0.1.4
+  - FPGA rebuilt. FIXED Ext Trig "Scan floor": `trigger_signals` was not declared in `dummy.v`, so Verilog made it an
+    implicit 1-bit net and only bit 0 (Pin) reached `trigger_input` (Synth 8-689). Declared as 8 bits
+  - FPGA reset value of `trig_sw` = 64 (Scan floor), as the default of the controller (also in `config_tool.py`)
+  - Scope external trigger debounce (`set_deb_len`, 0x40100090) reset value 12500 clk = 100 us (was 62500 = 0.5 ms),
+    shorter than the 131 us period of the Simulated Ramp: every floor is a valid trigger edge (with 0.5 ms only one
+    floor out of 4 was). Pin: edges closer than 100 us are ignored (bounces); max rate 10 kHz (was 2 kHz). The
+    register can still be written (e.g. `monitor 0x40100090 62500` restores 0.5 ms)
+  - Other implicit nets / width mismatches of the RTL fixed: `pwm_cfg_{a,b,c,d}_w` (24 bits; Slow out3/out4 = in1/in2
+    work now, Slow out1/out2 stay at 0 V), `pos_abs` (`fun_pico.v`, unused), saturation of the peak position sums with
+    16-bit input (`satprotect` Ri 16: a sum out of +-16383 wrapped around and could show a false peak, now it saturates),
+    `slow_out*_aux` 32 bits. Undriven nets driven explicitly with 0 (`slow_out1/2`, `noise_std`, `digital_modulation`)
+  - Removed dead code of the lock-in template (click handler of the missing #btn_set_trig button, which set
+    dummy_trig_sw = 2, and its plotclick handler)

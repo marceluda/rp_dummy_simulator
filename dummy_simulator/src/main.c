@@ -43,13 +43,15 @@ static rp_app_params_t rp_main_params[PARAMS_NUM+1] = {
     { /* trig_mode:
        *    0 - auto
        *    1 - normal
-       *    2 - single  */
-        "trig_mode", 0, 1, 0,         0,         2 },
+       *    2 - single
+       * v0.1.3: default 1 (normal), with the External source and Ext Trig = Scan floor (64) */
+        "trig_mode", 1, 1, 0,         0,         2 },
     { /* trig_source:
        *    0 - ChA
        *    1 - ChB
-       *    2 - ext.    */
-        "trig_source", 0, 1, 0,         0,         2 },
+       *    2 - ext.
+       * v0.1.3: default 2 (external) */
+        "trig_source", 2, 1, 0,         0,         2 },
     { /* trig_edge:
        *    0 - rising
        *    1 - falling */
@@ -307,7 +309,7 @@ static rp_app_params_t rp_main_params[PARAMS_NUM+1] = {
     { "dummy_osc2_filt_off"           ,      1, 1, 0,            0,            1 }, /** oscilloscope control osc2_filt_off **/
     { "dummy_osc_raw_mode"            ,      0, 0, 0,            0,            1 }, /** Set oscilloscope mode in Raw (int unit instead of Volts) **/
     { "dummy_osc_lockin_mode"         ,      0, 0, 0,            0,            1 }, /** Set oscilloscope mode in lock-in (ch1 as R [V|int], ch2 as Phase [rad]) **/
-    { "dummy_trig_sw"                 ,      0, 1, 0,            0,          255 }, /** Select the external trigger signal **/
+    { "dummy_trig_sw"                 ,     64, 1, 0,            0,          255 }, /** Select the external trigger signal (0 None, 1 Pin, 64 Scan floor of the Simulated Ramp; FPGA reset value 64 since v0.1.4, also written in rp_app_init()) **/
     { "dummy_out1_sw"                 ,      1, 1, 0,            0,           15 }, /** switch for muxer out1 **/
     { "dummy_out2_sw"                 ,      0, 1, 0,            0,           15 }, /** switch for muxer out2 **/
     { "dummy_slow_out1_sw"            ,      0, 1, 0,            0,           15 }, /** switch for muxer slow_out1 **/
@@ -400,7 +402,15 @@ int rp_app_init(void)
 
     TRACE("LOLO(rp_app_init): PARAMS_NUM: %d \n", PARAMS_NUM);
 
-    rp_set_params(&rp_main_params[0], /*RELOAD_DOCK_START*/ PARAMS_NUM /*RELOAD_DOCK_END*/ ); // PARAMS_DUMMY_PARAMS
+    int init_len = /*RELOAD_DOCK_START*/ PARAMS_NUM /*RELOAD_DOCK_END*/ ; // PARAMS_DUMMY_PARAMS
+    rp_set_params(&rp_main_params[0], init_len);
+
+    /* v0.1.3: default Ext Trig = Scan floor (64). rp_set_params() above does not write the dummy registers
+     * (no value changed) and rp_get_signals() reads trig_sw back from the FPGA. Since v0.1.4 the FPGA reset
+     * value is also 64 (dummy.v); the write is kept so that the default holds with an older bitstream.
+     * Not in the RELOAD controller (init_len < PARAMS_NUM), which keeps the FPGA state. */
+    if(init_len == PARAMS_NUM)
+        dummy_set_trig_sw(&rp_main_params[0]);
 
     TRACE("LOLO(rp_app_init): END\n");
 

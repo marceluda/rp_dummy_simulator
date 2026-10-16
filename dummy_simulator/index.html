@@ -1193,36 +1193,8 @@
       event.stopImmediatePropagation();
     });
 
-    $('#btn_set_trig').on('click', function() {
-      $('#btn_set_trig').prop('disabled', true);
-      if( $('#btn_set_trig_auto_zoom').is(':checked') ){
-        user_editing = true;
-        var max_time_val = 2*(params.local.dummy_ramp_hig_lim-params.local.dummy_ramp_low_lim)*(params.local.dummy_ramp_step+1) ;
-        max_time_val = params.local.time_units == 0 ? max_time_val * 8 / 1000       :
-                       params.local.time_units == 1 ? max_time_val * 8 / 1000000    :
-                                                      max_time_val * 8 / 1000000000 ;
-
-
-        params.local.trig_source=2 ;
-        params.local.trig_mode=1 ;
-        params.local.dummy_trig_sw=2
-
-        opt=plot.getOptions();
-        opt.xaxes[0].min=0-max_time_val*0.1;
-        opt.xaxes[0].max=max_time_val*1.1;
-
-        params.local.trig_delay=0-max_time_val*0.1;
-        params.local.xmin=0-max_time_val*0.1;
-        params.local.xmax=max_time_val*1.1;
-        params.local.gui_xmin=0-max_time_val*0.1;
-        params.local.gui_xmax=max_time_val*1.1;
-
-        setTimeout(function(){  autoscaleY(); }, update_interval*5 );
-
-        sendParams();
-      }
-      set_trigger_val=true;
-    });
+    // v0.1.3: removed the click handler of #btn_set_trig (template of the lock-in Apps): the button does not exist
+    // in this App and it selected Ext Trig 2, an unused trigger input.
 
     // Tooltips for range buttons
     $('#range_x_minus, #range_x_plus, #range_y_minus, #range_y_plus').tooltip({
@@ -1451,34 +1423,8 @@
         $("#hoverdata").text(str);
     });
 
-    $("#plot_holder").on("plotclick", function (event, pos, item) {
-        if (set_trigger_val) {
-            var time_raw =pos.x;
-            var level_raw=pos.y;
-
-            var time_val  = Math.round(  time_raw  *( Math.pow(10, (params.local.time_units-2)*3 ) )/8e-9) ;
-            var level_val = params.local.dummy_osc_raw_mode==0 ? Math.round(level_raw*8192) : level_raw ;
-
-            var max_time_val = 2*(params.local.dummy_ramp_hig_lim-params.local.dummy_ramp_low_lim)*(params.local.dummy_ramp_step+1) ;
-            time_val         = time_val % max_time_val;
-
-            if(time_val<0) time_val = time_val + max_time_val;
-
-            user_editing=false;
-            trigger_just_set=true;
-            $('#dummy_lock_trig_time_val').val(time_val);
-            params.local.dummy_lock_trig_time_val=time_val;
-
-            $('#dummy_lock_trig_val').val(level_val);
-            params.local.dummy_lock_trig_val=level_val;
-
-            $('#dummy_lock_trig_val').blur();
-
-
-            $('#btn_set_trig').prop('disabled', false);
-            set_trigger_val=false;
-        }
-    });
+    // v0.1.3: removed the plotclick handler that set the lock trigger from the graph: it only ran after a click on
+    // #btn_set_trig (set_trigger_val), which does not exist in this App.
 
 
     // dummy_update();
@@ -1511,7 +1457,6 @@
 
     });
 
-    $('#btn_set_trig').prop('disabled', false);
 
     $('label[for="dummy_ramp_step"]').on('click', function() {
       showModalHelp("<p>Ramp period param sets the number of clock ticks the ramp control waits before jumping the next ramp value.</p>"+
@@ -4675,16 +4620,11 @@
                       <div class="form-group">
                         <label for="dummy_trig_sw" class="col-xs-4 control-label">Ext Trig:</label>
                         <div class="col-xs-8">
-                          <select id="dummy_trig_sw" class="form-control">
-                            <option  value="0" selected="selected">None</option>
+                          <select id="dummy_trig_sw" class="form-control" data-toggle="tooltip" data-placement="top"
+                                  title="Signal of the scope trigger with Source = External. None: no trigger. Pin: external trigger pin (DIO0_P). Scan floor: the floor of the Simulated Ramp (internal ramp of this App, -8192..8191, period 131 us), when it jumps from its maximum to its minimum. The other values (2..32, 128) are unused inputs (no trigger).">
+                            <option  value="0">None</option>
                             <option  value="1">Pin</option>
-                            <option  value="2">-</option>
-                            <option  value="4">-</option>
-                            <option  value="8">-</option>
-                            <option  value="16">-</option>
-                            <option  value="32"></option>
-                            <option  value="64"></option>
-                            <option  value="128"></option>
+                            <option  value="64" selected="selected">Scan floor</option>
                           </select>
                         </div>
                       </div>
@@ -5263,7 +5203,7 @@
                     <select id="trig_source" class="form-control">
                       <option value="0">Channel 1</option>
                       <option value="1">Channel 2</option>
-                      <option value="2">External</option>
+                      <option value="2" selected="selected">External</option>
                     </select>
                   </div>
                 </div>
@@ -5272,7 +5212,7 @@
                   <div class="col-xs-8">
                     <select id="trig_mode" class="form-control">
                       <option value="0">Auto</option>
-                      <option value="1">Normal</option>
+                      <option value="1" selected="selected">Normal</option>
                       <option value="2">Single</option>
                     </select>
                   </div>

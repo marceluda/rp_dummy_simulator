@@ -644,12 +644,12 @@ end else begin
 
    // look for input changes
    if ((ext_trig_debp == 20'h0) && (ext_trig_in[1] && !ext_trig_in[2]))
-      ext_trig_debp <= set_deb_len ; // ~0.5ms
+      ext_trig_debp <= set_deb_len ; // set_deb_len (reset 100 us)
    else if (ext_trig_debp != 20'h0)
       ext_trig_debp <= ext_trig_debp - 20'd1 ;
 
    if ((ext_trig_debn == 20'h0) && (!ext_trig_in[1] && ext_trig_in[2]))
-      ext_trig_debn <= set_deb_len ; // ~0.5ms
+      ext_trig_debn <= set_deb_len ; // set_deb_len (reset 100 us)
    else if (ext_trig_debn != 20'h0)
       ext_trig_debn <= ext_trig_debn - 20'd1 ;
 
@@ -668,12 +668,12 @@ end else begin
 
    // look for input changes
    if ((asg_trig_debp == 20'h0) && (asg_trig_in[1] && !asg_trig_in[2]))
-      asg_trig_debp <= set_deb_len ; // ~0.5ms
+      asg_trig_debp <= set_deb_len ; // set_deb_len (reset 100 us)
    else if (asg_trig_debp != 20'h0)
       asg_trig_debp <= asg_trig_debp - 20'd1 ;
 
    if ((asg_trig_debn == 20'h0) && (!asg_trig_in[1] && asg_trig_in[2]))
-      asg_trig_debn <= set_deb_len ; // ~0.5ms
+      asg_trig_debn <= set_deb_len ; // set_deb_len (reset 100 us)
    else if (asg_trig_debn != 20'h0)
       asg_trig_debn <= asg_trig_debn - 20'd1 ;
 
@@ -713,7 +713,7 @@ if (adc_rstn_i == 1'b0) begin
    set_b_filt_bb <=  25'h0      ;
    set_b_filt_kk <=  25'hFFFFFF ;
    set_b_filt_pp <=  25'h0      ;
-   set_deb_len   <=  20'd62500  ;
+   set_deb_len   <=  20'd12500  ; // dummy_simulator v0.1.4: 100 us (was 62500 = 0.5 ms) < 131 us period of the Simulated Ramp, so Ext Trig "Scan floor" fires on every floor; writable at 0x40100090
    set_a_axi_en  <=   1'b0      ;
    set_b_axi_en  <=   1'b0      ;
 end else begin

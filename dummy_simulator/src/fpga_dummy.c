@@ -80,7 +80,7 @@ void reset_locks(void)
         g_dummy_reg->oscA_sw              =      0;
         g_dummy_reg->oscB_sw              =      0;
         g_dummy_reg->osc_ctrl             =      3;
-        g_dummy_reg->trig_sw              =      0;
+        g_dummy_reg->trig_sw              =     64;
         g_dummy_reg->out1_sw              =      1;
         g_dummy_reg->out2_sw              =      0;
         g_dummy_reg->slow_out1_sw         =      0;

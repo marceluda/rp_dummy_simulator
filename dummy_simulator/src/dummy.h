@@ -20,6 +20,7 @@ int dummy_exit(void);
 
 int dummy_update(rp_app_params_t *params);
 int dummy_update_main(rp_app_params_t *params);
+int dummy_set_trig_sw(rp_app_params_t *params);
 
 int dummy_freeze_regs(void);
 int dummy_restore_regs(void);

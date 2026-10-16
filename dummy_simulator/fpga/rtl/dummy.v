@@ -63,7 +63,9 @@ module dummy(
 
     wire signed [14-1:0] slow_out1_14,slow_out2_14,slow_out3_14,slow_out4_14 ;
     wire        [16-1:0] slow_out1_au,slow_out2_au,slow_out3_au,slow_out4_au ;
-    wire        [24-1:0] slow_out1_aux,slow_out2_aux,slow_out3_aux,slow_out4_aux ;
+    wire        [32-1:0] slow_out1_aux,slow_out2_aux,slow_out3_aux,slow_out4_aux ; // v0.1.4: 32 bits = pipe_mult pdt (was 24, Synth 8-689)
+    wire        [24-1:0] pwm_cfg_a_w,pwm_cfg_b_w,pwm_cfg_c_w,pwm_cfg_d_w ;          // v0.1.4: were implicit 1-bit nets (Synth 8-689)
+    wire        [ 8-1:0] trigger_signals ;                                          // v0.1.4: was an implicit 1-bit net (Synth 8-689): only bit 0 (Pin) survived
 
     //////////////////////////////////////////////////////////////////////////////////
     //                                                                              //
@@ -153,7 +155,7 @@ module dummy(
 
         assign pico_in_sum           = peak_pos + pico_in_wo_offset +   $signed(drift) ;
 
-        satprotect #(.Ri(15),.Ro(14),.SAT(14)) i_satprotect_pico_in_sum  ( .in(pico_in_sum),  .out(pico_in) );
+        satprotect #(.Ri(16),.Ro(14),.SAT(14)) i_satprotect_pico_in_sum  ( .in(pico_in_sum),  .out(pico_in) ); // v0.1.4: Ri 16 = width of pico_in_sum (was 15: MSB dropped, Synth 8-689)
 
 
         fun_pico i_fun_pico_A  ( .clk(clk), .rst(rst), .in( pico_in ),  .out( pico_out ) );
@@ -206,7 +208,7 @@ module dummy(
         assign simul_in_wo_offset     = simul_in_27>>>13 ;
         assign simul_in_sum           = peak_pos + simul_in_wo_offset +  $signed(drift) ;
 
-        satprotect #(.Ri(15),.Ro(14),.SAT(14)) i_satprotect_pico_simul_in ( .in(simul_in_sum),  .out(simul_in) );
+        satprotect #(.Ri(16),.Ro(14),.SAT(14)) i_satprotect_pico_simul_in ( .in(simul_in_sum),  .out(simul_in) ); // v0.1.4: Ri 16 = width of simul_in_sum (was 15, Synth 8-689)
 
         fun_pico i_fun_pico_B  ( .clk(clk), .rst(rst), .in(simul_in ),  .out( pico_simul_out ) );
         assign fun_simul_out =  pico_simul_out * $signed( sg_amp ) ;
@@ -504,6 +506,10 @@ module dummy(
     */
     assign     slow_out1_14 = 14'b10000000000000 ;
     assign     slow_out2_14 = 14'b10000000000000 ;
+    // v0.1.4: slow_out1/2 had no driver (Synth 8-3848, tied to 0 by synthesis): drive them explicitly to 0 (0 V)
+    // while their muxers stay disabled. Same output as before.
+    assign     slow_out1    = 12'd0 ;
+    assign     slow_out2    = 12'd0 ;
 
 
     muxer_reg4  #(.RES(14)) slow_out3_sw_m (
@@ -562,6 +568,10 @@ module dummy(
     aDACdecoder i_aDACdecoder_d (  .clk(clk), .rst(rst), .in(slow_out4),  .out(pwm_cfg_d_w)  );
 
 
+    // v0.1.4: nets without a driver (Synth 8-3848, synthesis tied them to 0): explicit constants, same behavior.
+    assign     noise_std          = 14'd0 ; // read-only monitor 0x88, not implemented
+    assign     digital_modulation = 1'b0  ; // exp_n_io[7] (output), not implemented
+
     // -----------------------------------------------------------------------------------------
     // External Trigger  selection
     // -----------------------------------------------------------------------------------------
@@ -606,7 +616,7 @@ module dummy(
         oscA_sw                <=   5'd0     ; // switch for muxer oscA
         oscB_sw                <=   5'd0     ; // switch for muxer oscB
         osc_ctrl               <=   2'd3     ; // oscilloscope control // [osc2_filt_off,osc1_filt_off]
-        trig_sw                <=   8'd0     ; // Select the external trigger signal
+        trig_sw                <=   8'd64    ; // Select the external trigger signal (v0.1.4: reset 64 = Scan floor, as the C default)
         out1_sw                <=   4'd1     ; // switch for muxer out1
         out2_sw                <=   4'd0     ; // switch for muxer out2
         slow_out1_sw           <=   4'd0     ; // switch for muxer slow_out1

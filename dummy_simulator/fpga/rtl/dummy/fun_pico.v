@@ -15,6 +15,7 @@ module fun_pico
     wire signed [14-1:0] pos_absolute;
 
     wire        [11-1:0] pos ;
+    wire        [14-1:0] pos_abs ;  // v0.1.4: was an implicit 1-bit net (unused)
 
     reg signed  [14-1:0]  out_reg ;
 
